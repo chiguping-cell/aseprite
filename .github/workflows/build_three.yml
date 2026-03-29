@@ -1,0 +1,25 @@
+name: Build Aseprite
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive # 必须拉取所有子模块
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DLAF_BACKEND=skia
+          ninja aseprite
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aseprite-windows
+          path: build/bin/
